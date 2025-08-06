@@ -20,13 +20,36 @@ services:
       - DB_MONGODB_USER=n8n
       - DB_MONGODB_PASSWORD=n8npass
       - DB_MONGODB_DATABASE=n8n
+
+      # 👇 Add these for proper credential saving
+      - N8N_HOST=localhost
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=http
+      - WEBHOOK_URL=http://localhost:5678
+
+      # 👇 Optional: allow importing npm packages in code nodes
       - NODE_FUNCTION_ALLOW_EXTERNAL=true
+
     volumes:
       - n8n_data_new:/home/node/.n8n
       - ./data:/data
+
     depends_on:
       - db
+      - ollama
+
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  ollama:
+    image: ollama/ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    container_name: ollama
 
 volumes:
   mongo_data:
   n8n_data_new:
+  ollama_data:
