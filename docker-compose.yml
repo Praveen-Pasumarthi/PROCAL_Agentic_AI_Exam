@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  db:
+    image: mongo:latest
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=n8n
+      - MONGO_INITDB_ROOT_PASSWORD=n8npass
+    volumes:
+      - mongo_data:/data/db
+
+  n8n:
+    image: n8nio/n8n:latest
+    ports:
+      - "5678:5678"
+    environment:
+      - DB_TYPE=mongodb
+      - DB_MONGODB_HOST=db
+      - DB_MONGODB_PORT=27017
+      - DB_MONGODB_USER=n8n
+      - DB_MONGODB_PASSWORD=n8npass
+      - DB_MONGODB_DATABASE=n8n
+      - NODE_FUNCTION_ALLOW_EXTERNAL=true
+    volumes:
+      - n8n_data_new:/home/node/.n8n
+      - ./data:/data
+    depends_on:
+      - db
+
+volumes:
+  mongo_data:
+  n8n_data_new:
